@@ -4,7 +4,7 @@ This workshop introduces system dynamics modeling (SDM), a robust systems scienc
 
 Workshop activities involve hands-on skill building exercises. All participants are encouraged to bring a personal laptop computer to the workshop, pre-installed with a free 20-day trial version of Stella Architect® system dynamics modeling software. 
 
-Learning objectives for all workshop participants include: 
+Learning objectives include: 
 1.	Understanding tenets of systems theory in relation to the system dynamics modeling approach
 2.	Applying basic concepts of systems thinking: Drawing ‘balancing’ and ‘reinforcing’ loops 
 3.	Creating, running and evaluating simple system dynamics models 
