@@ -1,4 +1,4 @@
-# International Epidemiological Association - Africa Regional Meeting 
+# IAE | Africa Regional Meeting 
 
 # Workshop on System Dynamics Modeling in Epidemiology  
 
