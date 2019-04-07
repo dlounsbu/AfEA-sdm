@@ -2,7 +2,7 @@
 
 Monday | 15-April-2019 | 10:30-13:30 | Eduardo Mondlane Conference Center | Maputo, Mozambique
 
-David W. Lounsbury, PhD
+David W. Lounsbury, PhD, Workshop Facilitator
 Assistant Professor, Epidemiology & Population Health | Associate Director, Patient-Centered Outcomes Research Training
 Division of Community Collaboration and Implementation Science | Albert Einstein College of Medicine | New York USA
 
