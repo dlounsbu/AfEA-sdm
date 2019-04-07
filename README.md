@@ -7,6 +7,6 @@ Workshop activities involve hands-on skill building exercises. All participants 
 Learning objectives include: 
 1.	Understanding tenets of systems theory in relation to the system dynamics modeling approach
 2.	Applying basic concepts of systems thinking: Drawing ‘balancing’ and ‘reinforcing’ loops 
-3.	Creating, running and evaluating simple system dynamics models 
+3.	Creating, running and evaluating simple system dynamics models. 
 
 By the end of the workshop, participants will appreciate that system dynamics model building is inherently ‘mixed methods’ research, well-suited to exploring virtually any problem in epidemiology, public health, and medicine. 
