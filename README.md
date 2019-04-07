@@ -4,7 +4,7 @@ Description
 
 This workshop introduces system dynamics modeling (SDM), a robust systems science methodology still under-used in social and behavioral research, to epidemiologists and public health practitioners. Best practices in SDM design and validation call for the application of a multi-stepped, iterative procedure that engages multiple stakeholders in deliberative problem identification, system conceptualization, model formulation, model simulation, and model evaluation. 
 
-The workshop will involve hands-on skill building exercises. All participants are encouraged to bring a personal laptop computer to the workshop, pre-installed with a free 20-day trial version of Stella Architect® system dynamics modeling software. 
+Workshop activities involve hands-on skill building exercises. All participants are encouraged to bring a personal laptop computer to the workshop, pre-installed with a free 20-day trial version of Stella Architect® system dynamics modeling software. 
 
 Learning objectives for all workshop participants include: 
 1.	Understanding tenets of systems theory in relation to the system dynamics modeling approach
