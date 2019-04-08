@@ -9,8 +9,8 @@ This workshop introduces system dynamics modeling (SDM), a robust systems scienc
 Workshop activities involve hands-on skill building exercises. All participants are encouraged to bring a personal laptop computer to the workshop, pre-installed with a free 20-day trial version of Stella Architect® system dynamics modeling software. 
 
 Learning objectives include: 
-1.	Understanding tenets of systems theory in relation to the system dynamics modeling approach
+1.	Understanding systems theory and the potential utility of SDM in for research and action in epidemiology
 2.	Applying basic concepts of systems thinking: Drawing ‘balancing’ and ‘reinforcing’ loops 
 3.	Creating, running and evaluating simple system dynamics models. 
 
-By the end of the workshop, participants will appreciate that system dynamics model building is inherently ‘mixed methods’ research, well-suited to virtual exploration of diverse complex problems in epidemiology, public health, and medicine. 
+By the end of the workshop, participants will appreciate how system dynamics modeling is a novel, ‘mixed methods’ research methodology well-suited to understanding and addressing diverse, complex problems in epidemiology, public health, and medicine. 
