@@ -2,7 +2,7 @@
 
 Instructions for downloading your fully functional trail copy of Stella Architect® system dynamics modeling software are below.
 
-<b>STEP 1.</b> Choose the link to the version that matches your computer's operating system. A Dropbox 
+<b>STEP 1.</b> Choose the link to the version that matches your computer's operating system. 
 
 <b>PC 64-Bit: https://www.dropbox.com/s/eek4d46q4keqg8l/Stella_Architect_Workshop_1.8.3_64bit_Setup.exe?dl=0 
  
