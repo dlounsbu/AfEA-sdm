@@ -1,4 +1,4 @@
-# IAE | Africa Regional Meeting Workshop on System Dynamics Modeling in Epidemiology 
+# IEA | Africa Regional Meeting Workshop on System Dynamics Modeling in Epidemiology 
 
 Monday | 15-April-2019 | 10:30-13:30 | Eduardo Mondlane Conference Center | Maputo, Mozambique
 
