@@ -14,6 +14,6 @@ Apple/MAC: https://www.dropbox.com/s/j9mi637ly20o39u/Stella_Architect_Workshop_1
 
 <b>STEP 3.</b> Start the installation process by clicking on the downloaded (.exe) file. 
 
-<b>STEP 4.</b> When prompted, activate your trial version by entering the following Registration code:  042-706-702-860
+<b>STEP 4.</b> When prompted, activate your trial version by entering the following Registration code:  042-706-702-860. Note that this is a special code to activate the workshop trial version of Stella only.
 
 <b>STEP 5.</b> Start Stella from your <i>Programs</i> or <i>Apps</i> window. 
