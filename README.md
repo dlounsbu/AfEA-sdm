@@ -9,7 +9,7 @@ This workshop introduces system dynamics modeling (SDM), a robust systems scienc
 Workshop activities involve hands-on skill building exercises. All participants are encouraged to bring a personal laptop computer to the workshop, pre-installed with a free 20-day trial copy of Stella Architect® system dynamics modeling software. See instructions for downloading and installing your copy at https://github.com/dlounsbu/AfEA-sdm/tree/master/trial_stella_architect_software.
 
 Learning objectives include: 
-1.	Understanding systems theory and the potential utility of SDM in for research and action in epidemiology
+1.	Understanding systems theory and the potential utility of SDM for research and action in epidemiology
 2.	Applying basic concepts of systems thinking: Drawing ‘balancing’ and ‘reinforcing’ loops 
 3.	Creating, running and evaluating simple system dynamics models. 
 
