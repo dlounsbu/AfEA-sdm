@@ -1,6 +1,6 @@
 # Stella Architect® System Dynamics Modeling Software
 
-<b>Instructions for downloading and installing your fully functional trail copy of Stella Architect® system dynamics modeling software</b>
+<b>Instructions for downloading and installing your fully functional trail copy of Stella Architect® system dynamics modeling software:</b>
 
 <b>STEP 1.</b> Choose the link to the version that matches your computer's operating system. 
 
