@@ -1,8 +1,9 @@
 # Resources and Selected Literature on System Dynamics Modeling Methods and Applications
 
-<b>Seminal Textbooks and Selected Readings:</b> In addition to the articles shared here, the SDS has compiled a list of important, useful references. See https://sds.memberclicks.net/selected-readings. 
+<b>Seminal Textbooks and Selected Readings:</b> In addition to the articles shared here, the <i>System Dynamics Society</i> has compiled a list of important, useful references. See https://sds.memberclicks.net/selected-readings. 
 
 <b>Scriptapedia:</b> Scriptapedia is an introduction to group model building that uses structured small group exercises called scripts. Scriptapedia is intended to be a freely distributed book and easily edited to support the creation of new scripts, discussion of what works and what doesn't, and internationalization of group model building practice. See https://en.wikibooks.org/wiki/Scriptapedia.
 
 <b>System Dynamics Society:</b> The System Dynamics Society is an international, nonprofit organization devoted to encouraging the development and use of System Dynamics and systems thinking around the world. The Society provides a forum in which researchers, educators, students, consultants and practitioners in the academic, corporate and public sectors interact to keep abreast of current developments, build on each other’s work and introduce newcomers to the field. Its constituency is international, multi-faceted and diverse, affording members numerous occasions to build both local and international associations. With members in over 75 countries, the System Dynamics Society provides a strong, unified voice supporting the advancement of System Dynamics. Members are able to stay on top of developments around the world by reading the cutting-edge research and applications of System Dynamics published in the <i>System Dynamics Review</i>, attending the annual conference. Additionally, local <u>Chapters and Special Interest Groups</u> allow for more frequent face-to-face and electronic meetings. See https://www.systemdynamics.org/.
+
 
