@@ -1,6 +1,6 @@
 # IEA | Africa Regional Meeting Workshop on System Dynamics Modeling in Epidemiology 
 
-Monday | 15-April-2019 | 10:30-13:30 | Eduardo Mondlane Conference Center | Maputo, Mozambique
+Monday | 15-April-2019 | 11:30-14:00 | Eduardo Mondlane Conference Center | Maputo, Mozambique
 
 David W. Lounsbury, PhD | Workshop Facilitator | Albert Einstein College of Medicine | New York USA
 
