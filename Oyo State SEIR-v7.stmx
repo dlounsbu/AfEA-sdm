@@ -1,0 +1,1111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<smile version="1.0" namespace="std, isee" uses_arrays="1"/>
+		<name>Oyo State SEIR-v7</name>
+		<uuid>14ae77ef-d7e1-4fc2-b7cb-394edf5fd3e2</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="1.9.4" isee:build_number="1995" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<sim_specs isee:sim_duration="1.287624" isee:simulation_delay="0.00352774" isee:restore_on_start="false" isee:save_interval="1" method="Euler" time_units="Days" isee:instantaneous_flows="false">
+		<start>0</start>
+		<stop>365</stop>
+		<dt reciprocal="true">12</dt>
+	</sim_specs>
+	<dimensions>
+		<dim name="Severity">
+			<elem name="Moderate"/>
+			<elem name="Severe"/>
+		</dim>
+	</dimensions>
+	<isee:prefs show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" saved_runs="5" keep="false" rifp="true"/>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<default_format/>
+	<isee:sensi_specs_list active_index="0">
+		<isee:sensi_specs name="Sensitivity" method="grid">
+			<isee:variable starting_value="4" ending_value="20" type="incremental" seed="12345" name='"Emergency_Protocol_Period_(0_to_52_Weeks)"' num_samples="5"/>
+			<isee:variable starting_value="0.15" ending_value="0.3" type="incremental" seed="12345" name="Per_contact_risk_of_exposure" num_samples="5"/>
+		</isee:sensi_specs>
+	</isee:sensi_specs_list>
+	<isee:optimizer_specs_list active_index="0">
+		<isee:optimizer_specs name="Optimization" method="Powell" additional_starts="0" report_interval="1" confidence_range="0"/>
+	</isee:optimizer_specs_list>
+	<isee:payoff_specs_list>
+		<isee:payoff_specs name="Payoff"/>
+	</isee:payoff_specs_list>
+	<model_units>
+		<unit name="People">
+			<eqn/>
+			<alias>person</alias>
+			<alias>persons</alias>
+		</unit>
+		<unit name="Dimensionless">
+			<eqn>1</eqn>
+			<alias>dmnl</alias>
+			<alias>unitless</alias>
+			<alias>fraction</alias>
+		</unit>
+		<unit name="Days">
+			<eqn/>
+			<alias>day</alias>
+		</unit>
+	</model_units>
+	<model>
+		<isee:extra_collection_variables>
+			<isee:extra_collection_variable name="Recovered"/>
+			<isee:extra_collection_variable name="Susceptible"/>
+			<isee:extra_collection_variable name="Asymptomatic_recovery_rate"/>
+			<isee:extra_collection_variable name="Exposure_rate"/>
+			<isee:extra_collection_variable name="Symptomatic_Cases"/>
+		</isee:extra_collection_variables>
+		<variables>
+			<stock name="Susceptible">
+				<doc>2020 population of Ibadan =3.5M
+
+2020 pop Oyo = 7,306,335
+</doc>
+				<eqn>7500000</eqn>
+				<inflow>Traveling_susceptibles_entering_Oyo</inflow>
+				<outflow>Exposure_rate</outflow>
+				<non_negative/>
+				<units>Persons</units>
+			</stock>
+			<stock name="Recovered">
+				<eqn>0</eqn>
+				<inflow>Asymptomatic_recovery_rate</inflow>
+				<inflow>Symptomatic_recovery_rate</inflow>
+				<inflow>Req_hosp_recovery_rate</inflow>
+				<outflow>Recovered_leaving_Ibadan</outflow>
+				<non_negative/>
+				<units>Persons</units>
+			</stock>
+			<flow name="Exposure rate">
+				<eqn>(&quot;Fractional_prevalence_COVID-19&quot;*Per_contact_risk_of_exposure*Contacts_per_susceptible_per_day*Susceptible)</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<flow name="Asymptomatic\nrecovery rate">
+				<eqn>Asymptomatic/Time_to_recover</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<flow name="Traveling susceptibles\nentering Oyo">
+				<eqn>Travelers_crossing_into_Oyo*(1-Expected_travelers_exposure_rate)</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<aux name="Per contact\nrisk of exposure">
+				<eqn>.17</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Population">
+				<eqn>Susceptible+Exposed+Asymptomatic+Recovered+Symptomatic_Cases+Requiring_Hospital_Care[Moderate]+Requiring_Hospital_Care[Severe]</eqn>
+				<units>Persons</units>
+			</aux>
+			<aux name="Fractional\nprevalence\nCOVID-19">
+				<eqn>(Asymptomatic+Symptomatic_Cases+Requiring_Hospital_Care[Moderate]+Requiring_Hospital_Care[Severe])/Population</eqn>
+				<units>dmnl</units>
+			</aux>
+			<flow name="Recovered\nleaving Ibadan">
+				<eqn>Recovered*Prop_recovered_leaving_Oyo</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<stock name="Deceased">
+				<dimensions>
+					<dim name="Severity"/>
+				</dimensions>
+				<element subscript="Moderate">
+					<eqn>0</eqn>
+				</element>
+				<element subscript="Severe">
+					<eqn>0</eqn>
+				</element>
+				<inflow>Fatality_rate</inflow>
+				<non_negative/>
+				<units>Persons</units>
+			</stock>
+			<flow name="Fatality rate">
+				<dimensions>
+					<dim name="Severity"/>
+				</dimensions>
+				<element subscript="Moderate">
+					<eqn>(Requiring_Hospital_Care[Moderate]*Prop_case_fatality)/Time_to_death</eqn>
+				</element>
+				<element subscript="Severe">
+					<eqn>(Requiring_Hospital_Care[Severe]*Prop_case_fatality)/Time_to_death</eqn>
+				</element>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<flow name="Travelers\ncrossing into Oyo">
+				<eqn>Travelers_awaiting_entry_to_Oyo*Prop_travelers_processed_per_day</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<aux name="Expected arrivals\nat Oyo boarder per day">
+				<eqn>30</eqn>
+				<units>Persons/Day</units>
+			</aux>
+			<aux name="Expected travelers\nexposure rate">
+				<eqn>.33</eqn>
+				<units>1/Day</units>
+			</aux>
+			<stock name="Exposed">
+				<eqn>1</eqn>
+				<inflow>Exposure_rate</inflow>
+				<inflow>Traveling_exposed_entering_Ibadan</inflow>
+				<outflow>Infection_rate</outflow>
+				<outflow>Asymptomatic_rate</outflow>
+				<non_negative/>
+				<units>Persons</units>
+			</stock>
+			<stock name="Asymptomatic">
+				<eqn>0</eqn>
+				<inflow>Asymptomatic_rate</inflow>
+				<outflow>Asymptomatic_recovery_rate</outflow>
+				<non_negative/>
+				<units>Persons</units>
+			</stock>
+			<stock name="Requiring\nHospital Care">
+				<dimensions>
+					<dim name="Severity"/>
+				</dimensions>
+				<element subscript="Moderate">
+					<eqn>0</eqn>
+				</element>
+				<element subscript="Severe">
+					<eqn>0</eqn>
+				</element>
+				<inflow>Hospital_surge_rate</inflow>
+				<outflow>Fatality_rate</outflow>
+				<outflow>Req_hosp_recovery_rate</outflow>
+				<non_negative/>
+				<units>Persons</units>
+			</stock>
+			<stock name="Symptomatic\nCases">
+				<eqn>0</eqn>
+				<inflow>Infection_rate</inflow>
+				<outflow>Hospital_surge_rate</outflow>
+				<outflow>Symptomatic_recovery_rate</outflow>
+				<non_negative/>
+				<units>Persons</units>
+			</stock>
+			<flow name="Infection rate">
+				<eqn>(Exposed*Prop_developing_symptoms)/Time_to_develop_symptoms</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<flow name="Asymptomatic rate">
+				<eqn>(Exposed*(1-Prop_developing_symptoms))/Time_to_develop_symptoms</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<flow name="Hospital surge rate">
+				<dimensions>
+					<dim name="Severity"/>
+				</dimensions>
+				<element subscript="Moderate">
+					<eqn>(Symptomatic_Cases*Prop_requiring_hosp_care*(1-Prop_severe_cases))/Time_to_require_hosp_care</eqn>
+				</element>
+				<element subscript="Severe">
+					<eqn>(Symptomatic_Cases*Prop_requiring_hosp_care*Prop_severe_cases)/Time_to_require_hosp_care</eqn>
+				</element>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<flow name="Symptomatic\nrecovery rate">
+				<eqn>Symptomatic_Cases*(1-Prop_requiring_hosp_care)/Time_to_recover</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<flow name="Req hosp recovery rate">
+				<dimensions>
+					<dim name="Severity"/>
+				</dimensions>
+				<element subscript="Moderate">
+					<eqn>(Requiring_Hospital_Care[Moderate]*(1-Prop_case_fatality[Moderate]))/Time_to_recover</eqn>
+				</element>
+				<element subscript="Severe">
+					<eqn>(Requiring_Hospital_Care[Severe]*(1-Prop_case_fatality[Severe]))/Time_to_recover</eqn>
+				</element>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<aux name="Prop developing symptoms">
+				<eqn>.04</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Time to\ndevelop symptoms">
+				<eqn>7</eqn>
+				<units>Days</units>
+			</aux>
+			<aux name="Time to require\nhosp care">
+				<eqn>7</eqn>
+				<units>Days</units>
+			</aux>
+			<aux name="Prop requiring\nhosp care">
+				<eqn>.30</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Time to\nrecover">
+				<eqn>7</eqn>
+				<units>Days</units>
+			</aux>
+			<aux name="Prop case fatality">
+				<dimensions>
+					<dim name="Severity"/>
+				</dimensions>
+				<element subscript="Moderate">
+					<eqn>.10</eqn>
+				</element>
+				<element subscript="Severe">
+					<eqn>.40</eqn>
+				</element>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Time to death">
+				<eqn>7</eqn>
+				<units>Days</units>
+			</aux>
+			<aux name="Prop severe cases">
+				<eqn>.40</eqn>
+				<units>dmnl</units>
+			</aux>
+			<flow name="Traveling exposed entering Ibadan">
+				<eqn>Travelers_crossing_into_Oyo*Expected_travelers_exposure_rate</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<aux name="Emergency\nProtocol Period\n(0 to 52 Weeks)">
+				<eqn>12</eqn>
+				<range min="1" max="35"/>
+				<units>dmnl</units>
+			</aux>
+			<flow name="Incidence">
+				<eqn>Infection_rate</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<stock name="Cumulative\nSymptomatic\nCases">
+				<eqn>.0001</eqn>
+				<inflow>Incidence</inflow>
+				<non_negative/>
+				<units>Persons</units>
+			</stock>
+			<aux name="Resultant\nproportion\ndeceased">
+				<eqn>(Deceased[Moderate]+Deceased[Severe])/Cumulative_Symptomatic_Cases</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Contacts per susceptible per day">
+				<doc>2.5</doc>
+				<eqn>Effect_of_partial_lockdown_on_contact_rate</eqn>
+				<units>1/Day</units>
+			</aux>
+			<aux name="Effect of partial lockdown on contact rate">
+				<eqn>2.5 + STEP (-1.0,  Start_Day) + STEP (1.0, Stop_Day)</eqn>
+			</aux>
+			<aux name="Start Day">
+				<eqn>23</eqn>
+				<units>Days</units>
+			</aux>
+			<aux name="Stop Day">
+				<eqn>Start_Day+(&quot;Emergency_Protocol_Period_(0_to_52_Weeks)&quot;*7)</eqn>
+				<units>Days</units>
+			</aux>
+			<stock name="Travelers\nawaiting entry\nto Oyo">
+				<eqn>0</eqn>
+				<inflow>Travelers_arriving_to_Oyo</inflow>
+				<outflow>Travelers_crossing_into_Oyo</outflow>
+				<outflow>Travelers_returning</outflow>
+				<non_negative/>
+				<units>Persons</units>
+			</stock>
+			<flow name="Travelers arriving\nto Oyo">
+				<eqn>MIN (Expected_arrivals_at_Oyo_boarder_per_day,  Boarder_waiting_capacity)</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<flow name="Travelers returning">
+				<eqn>(1-Prop_travelers_processed_per_day)*Travelers_awaiting_entry_to_Oyo</eqn>
+				<non_negative/>
+				<units>Persons/Day</units>
+			</flow>
+			<aux name="Prop travelers\nprocessed per day">
+				<eqn>Effect_of_emergency_operations_on_boarder_control</eqn>
+				<units>1/Day</units>
+			</aux>
+			<aux name="Boarder\nwaiting capacity">
+				<eqn>MAX_waiting_capacity-Travelers_awaiting_entry_to_Oyo</eqn>
+			</aux>
+			<aux name="MAX waiting\ncapacity">
+				<eqn>500</eqn>
+				<units>Persons</units>
+			</aux>
+			<aux name="Effect of emergency operations on boarder control">
+				<eqn>.5 + STEP (-.4, Start_Day) + STEP(.4, Stop_Day)</eqn>
+			</aux>
+			<aux name="Prop recovered\nleaving Oyo">
+				<eqn>.000005</eqn>
+				<units>1/Day</units>
+			</aux>
+		</variables>
+		<views>
+			<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+				<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+				<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="12pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+					<isee:series_styles>
+						<isee:series_style color="blue" thickness="2"/>
+						<isee:series_style color="red" thickness="2"/>
+						<isee:series_style color="fuchsia" thickness="2"/>
+						<isee:series_style color="#008F44" thickness="2"/>
+						<isee:series_style color="#FF7F00" thickness="2"/>
+						<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF007F" thickness="1"/>
+						<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#C8C8C8" thickness="1"/>
+					</isee:series_styles>
+				</graph>
+				<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="beginning" report_flows="instantaneous" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				<button color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595"/>
+				<isee:annotation color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595" popup_corner_radius="0" popup_background_color="#FFFECF"/>
+				<slider color="black" background="#E0E0E0" font_size="12pt" num_ticks="3" label_side="top" wrap_title="true" vertical="false" isee:fancy_appearance="false" isee:show_hover_tip="when_deciding" input_expands="true" input_width="100"/>
+				<isee:sim_speed_slider color="black" background="white"/>
+				<isee:time_slider color="#E95F74" background="silver"/>
+				<isee:pie_input color="black" background="white" font_size="12pt" legend_position="bottom" isee:transparent="false"/>
+				<knob color="#66CC66" background="#E0E0E0" font_size="12pt" label_side="bottom" wrap_title="true"/>
+				<numeric_input color="black" background="#E0E0E0" font_size="12pt" label_side="left" wrap_title="true" input_expands="false" input_width="100"/>
+				<switch color="black" background="#E0E0E0" font_size="12pt" label_side="top" wrap_title="true" isee:appearance="switch" isee:on_color="green"/>
+				<options color="black" background="white" appearance="radio-buttons" arrangement="vertical"/>
+				<graphical_input color="black" background="#E0E0E0" font_size="12pt" isee:show_hover_tip="true"/>
+				<group_input color="black" background="#E0E0E0" font_size="12pt"/>
+				<lamp color="black" background="white" font_size="9pt"/>
+				<gauge color="black" background="white" font_size="9pt" needle_color="#F09F72" bar_color="#EEEEEE" bar_progress_color="black" appearance="radial" num_major_ticks="11" num_minor_ticks="11" show_numeric_value="true"/>
+				<isee:spatial_map color="black" background="white" font_size="12pt"/>
+				<isee:animation_object color="black" background="white" font_size="12pt"/>
+				<isee:navigation_widget color="black" background="white" border_color="#999999" border_width="thin" border_style="solid" item_spacing="6" appearance="tabs" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD"/>
+				<isee:shape color="black" background="white" opacity="1" transparent_background="true"/>
+				<isee:selector color="black" background="white"/>
+				<isee:iframe color="black" background="white"/>
+				<isee:financial_table color="black" background="white" auto_fit="true" first_column_width="250" other_column_width="100" header_font_style="normal" header_font_weight="bold" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="14pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+			</style>
+			<view isee:show_pages="false" background="white" page_width="1034" page_height="794" isee:page_cols="3" isee:page_rows="3" isee:popup_graphs_are_comparative="true" type="stock_flow">
+				<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+					<stock color="blue" background="white" font_weight="bold" font_color="blue" font_size="12pt" label_side="top">
+						<shape type="rectangle" width="45" height="35"/>
+					</stock>
+					<flow color="blue" background="white" font_weight="bold" font_color="blue" font_size="12pt" label_side="bottom"/>
+					<isee:placeholder color="#228B22" background="white" font_color="#228B22" label_side="bottom"/>
+					<module color="blue" background="white" font_weight="bold" font_color="blue" font_size="12pt" label_side="top">
+						<shape type="rectangle" width="55" height="45"/>
+					</module>
+					<aux color="blue" background="white" font_weight="bold" font_color="blue" font_size="12pt" label_side="bottom">
+						<shape type="circle" radius="18"/>
+					</aux>
+					<group color="red" background="white" font_color="red" font_size="9pt"/>
+					<connector color="#FF007F" background="white" font_color="#FF007F" font_size="9pt" isee:thickness="1"/>
+					<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+					<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="12pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+						<isee:series_styles>
+							<isee:series_style color="blue" thickness="2"/>
+							<isee:series_style color="red" thickness="2"/>
+							<isee:series_style color="fuchsia" thickness="2"/>
+							<isee:series_style color="#008F44" thickness="2"/>
+							<isee:series_style color="#FF7F00" thickness="2"/>
+							<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF007F" thickness="1"/>
+							<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#C8C8C8" thickness="1"/>
+						</isee:series_styles>
+					</graph>
+					<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="beginning" report_flows="instantaneous" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				</style>
+				<stock label_side="center" x="879.298" y="390.06" width="132" height="87.2857" name="Susceptible"/>
+				<stock label_side="center" x="1989.93" y="405.909" width="128.429" height="90.2619" name="Recovered"/>
+				<flow label_side="bottom" x="1090.84" y="438.703" name="Exposure rate">
+					<pts>
+						<pt x="1011.3" y="438.703"/>
+						<pt x="1182.38" y="438.703"/>
+					</pts>
+				</flow>
+				<flow label_side="top" x="1805.79" y="288.645" name="Asymptomatic\nrecovery rate">
+					<pts>
+						<pt x="1555.2" y="288.645"/>
+						<pt x="2056.38" y="288.645"/>
+						<pt x="2056.38" y="405.909"/>
+					</pts>
+				</flow>
+				<flow label_side="bottom" x="792.477" y="433.04" name="Traveling susceptibles\nentering Oyo">
+					<pts>
+						<pt x="705.655" y="433.04"/>
+						<pt x="879.298" y="433.04"/>
+					</pts>
+				</flow>
+				<aux color="#00AA00" font_color="#00AA00" label_side="top" x="1145.99" y="314.608" name="Per contact\nrisk of exposure"/>
+				<aux label_side="top" x="1373.89" y="135.948" name="Population"/>
+				<aux label_side="left" x="1140.46" y="187.615" name="Fractional\nprevalence\nCOVID-19"/>
+				<flow x="2229.23" y="451.04" name="Recovered\nleaving Ibadan">
+					<pts>
+						<pt x="2118.36" y="451.04"/>
+						<pt x="2364.11" y="451.04"/>
+					</pts>
+				</flow>
+				<connector uid="1" angle="260.651">
+					<from>Per_contact_risk_of_exposure</from>
+					<to>Exposure_rate</to>
+				</connector>
+				<connector uid="2" angle="339.442">
+					<from>Susceptible</from>
+					<to>Exposure_rate</to>
+				</connector>
+				<stock label_side="center" x="1761.44" y="766.357" width="145.095" height="84.1904" name="Deceased"/>
+				<flow label_side="right" x="1837.87" y="702.291" name="Fatality rate">
+					<pts>
+						<pt x="1837.87" y="650.226"/>
+						<pt x="1837.87" y="766.357"/>
+					</pts>
+				</flow>
+				<stacked_container uid="3" x="69.2143" y="1440.13" width="686.238" height="451.925">
+					<graph width="686.238" height="451.925" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="7" num_y_labels="7" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Symptomatic_Cases"/>
+						</plot>
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="1" show_y_axis="true">
+							<entity name="Requiring_Hospital_Care[*]"/>
+						</plot>
+						<plot color="#7F00FF" pen_style="dot_dashed" isee:keep_zero_visible="true" pen_width="1" index="2" show_y_axis="true">
+							<entity name="Deceased[*]"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<flow label_side="bottom" x="589.979" y="352.5" name="Travelers\ncrossing into Oyo">
+					<pts>
+						<pt x="504.584" y="352.5"/>
+						<pt x="699.375" y="352.5"/>
+					</pts>
+				</flow>
+				<connector uid="4" angle="10.8719">
+					<from>Travelers_crossing_into_Oyo</from>
+					<to>Traveling_susceptibles_entering_Oyo</to>
+				</connector>
+				<connector uid="5" angle="26.1967">
+					<from>Recovered</from>
+					<to>Recovered_leaving_Ibadan</to>
+				</connector>
+				<aux color="#00AA00" font_color="#00AA00" label_side="top" x="259.643" y="282.858" name="Expected arrivals\nat Oyo boarder per day"/>
+				<aux color="#00AA00" font_color="#00AA00" label_side="top" x="824.226" y="354.702" name="Expected travelers\nexposure rate"/>
+				<connector uid="6" angle="282.265">
+					<from>Expected_travelers_exposure_rate</from>
+					<to>Traveling_susceptibles_entering_Oyo</to>
+				</connector>
+				<stock label_side="center" x="1182.38" y="395.369" width="142.5" height="86.6667" name="Exposed"/>
+				<stock label_side="center" x="1421.87" y="251.561" width="133.333" height="89.1667" name="Asymptomatic"/>
+				<stock label_side="center" x="1758.11" y="561.059" width="140" height="89.1667" name="Requiring\nHospital Care"/>
+				<connector uid="7" angle="174.551">
+					<from>Population</from>
+					<to>&quot;Fractional_prevalence_COVID-19&quot;</to>
+				</connector>
+				<stock label_side="center" x="1429.01" y="550.678" width="134.619" height="89.5476" name="Symptomatic\nCases"/>
+				<flow x="1350.38" y="592.119" name="Infection rate">
+					<pts>
+						<pt x="1283.75" y="482.036"/>
+						<pt x="1283.75" y="592.119"/>
+						<pt x="1429.01" y="592.119"/>
+					</pts>
+				</flow>
+				<flow label_side="bottom" x="1331.96" y="296.608" name="Asymptomatic rate">
+					<pts>
+						<pt x="1254.05" y="395.369"/>
+						<pt x="1254.05" y="296.608"/>
+						<pt x="1421.87" y="296.608"/>
+					</pts>
+				</flow>
+				<flow x="1654.87" y="601.131" name="Hospital surge rate">
+					<pts>
+						<pt x="1563.63" y="601.131"/>
+						<pt x="1758.11" y="601.131"/>
+					</pts>
+				</flow>
+				<flow label_side="top" x="1737.09" y="446.04" name="Symptomatic\nrecovery rate">
+					<pts>
+						<pt x="1496.25" y="550.678"/>
+						<pt x="1496.25" y="446.04"/>
+						<pt x="1989.93" y="446.04"/>
+					</pts>
+				</flow>
+				<flow x="1980.16" y="611.131" name="Req hosp recovery rate">
+					<pts>
+						<pt x="1898.11" y="611.131"/>
+						<pt x="2062.21" y="611.131"/>
+						<pt x="2062.21" y="496.171"/>
+					</pts>
+				</flow>
+				<connector uid="8" angle="54.7363">
+					<from>Susceptible</from>
+					<to>Population</to>
+				</connector>
+				<connector uid="9" angle="113.157">
+					<from>Exposed</from>
+					<to>Population</to>
+				</connector>
+				<connector uid="10" angle="91.4733">
+					<from>Asymptomatic</from>
+					<to>Population</to>
+				</connector>
+				<connector uid="11" angle="124.639">
+					<from>Recovered</from>
+					<to>Population</to>
+				</connector>
+				<connector uid="12" angle="54.7245">
+					<from>Symptomatic_Cases</from>
+					<to>Population</to>
+				</connector>
+				<connector uid="13" angle="100.654">
+					<from>Requiring_Hospital_Care</from>
+					<to>Population</to>
+				</connector>
+				<connector uid="14" angle="215.158">
+					<from>&quot;Fractional_prevalence_COVID-19&quot;</from>
+					<to>Exposure_rate</to>
+				</connector>
+				<connector uid="15" angle="126.039">
+					<from>Asymptomatic</from>
+					<to>&quot;Fractional_prevalence_COVID-19&quot;</to>
+				</connector>
+				<connector uid="16" angle="117.224">
+					<from>Symptomatic_Cases</from>
+					<to>&quot;Fractional_prevalence_COVID-19&quot;</to>
+				</connector>
+				<connector uid="17" angle="130.463">
+					<from>Requiring_Hospital_Care</from>
+					<to>&quot;Fractional_prevalence_COVID-19&quot;</to>
+				</connector>
+				<aux label_side="right" x="1426.68" y="424.873" name="Prop developing symptoms"/>
+				<connector uid="18" angle="102.22">
+					<from>Prop_developing_symptoms</from>
+					<to>Asymptomatic_rate</to>
+				</connector>
+				<connector uid="19" angle="271.113">
+					<from>Prop_developing_symptoms</from>
+					<to>Infection_rate</to>
+				</connector>
+				<connector uid="20" angle="47.6655">
+					<from>Exposed</from>
+					<to>Asymptomatic_rate</to>
+				</connector>
+				<connector uid="21" angle="315.494">
+					<from>Exposed</from>
+					<to>Infection_rate</to>
+				</connector>
+				<aux label_side="right" x="1373.89" y="469.04" name="Time to\ndevelop symptoms"/>
+				<connector uid="22" angle="90.6008">
+					<from>Time_to_develop_symptoms</from>
+					<to>Asymptomatic_rate</to>
+				</connector>
+				<connector uid="23" angle="278.789">
+					<from>Time_to_develop_symptoms</from>
+					<to>Infection_rate</to>
+				</connector>
+				<aux x="1660.42" y="671.25" name="Time to require\nhosp care"/>
+				<connector uid="24" angle="47.2312">
+					<from>Time_to_require_hosp_care</from>
+					<to>Hospital_surge_rate</to>
+				</connector>
+				<aux label_side="left" x="1682.42" y="527.286" name="Prop requiring\nhosp care"/>
+				<connector uid="25" angle="17.5227">
+					<from>Asymptomatic</from>
+					<to>Asymptomatic_recovery_rate</to>
+				</connector>
+				<connector uid="26" angle="50.5759">
+					<from>Symptomatic_Cases</from>
+					<to>Symptomatic_recovery_rate</to>
+				</connector>
+				<connector uid="27" angle="292.161">
+					<from>Prop_requiring_hosp_care</from>
+					<to>Hospital_surge_rate</to>
+				</connector>
+				<connector uid="28" angle="23.4952">
+					<from>Symptomatic_Cases</from>
+					<to>Hospital_surge_rate</to>
+				</connector>
+				<connector uid="29" angle="14.1733">
+					<from>Prop_requiring_hosp_care</from>
+					<to>Symptomatic_recovery_rate</to>
+				</connector>
+				<aux label_side="left" x="1929.37" y="496.17" width="18" height="18" name="Time to\nrecover"/>
+				<connector uid="30" angle="110.79">
+					<from>Time_to_recover</from>
+					<to>Symptomatic_recovery_rate</to>
+				</connector>
+				<connector uid="31" angle="22.1468">
+					<from>Requiring_Hospital_Care</from>
+					<to>Req_hosp_recovery_rate</to>
+				</connector>
+				<aux label_side="bottom" x="1980.93" y="713.643" name="Prop case fatality"/>
+				<connector uid="32" angle="59.9726">
+					<from>Prop_case_fatality</from>
+					<to>Req_hosp_recovery_rate</to>
+				</connector>
+				<connector uid="33" angle="207.426">
+					<from>Prop_case_fatality</from>
+					<to>Fatality_rate</to>
+				</connector>
+				<connector uid="34" angle="249.928">
+					<from>Requiring_Hospital_Care</from>
+					<to>Fatality_rate</to>
+				</connector>
+				<aux x="1760.92" y="720.708" name="Time to death"/>
+				<connector uid="35" angle="350.873">
+					<from>Time_to_death</from>
+					<to>Fatality_rate</to>
+				</connector>
+				<aux label_side="left" x="1607.15" y="671.25" name="Prop severe cases"/>
+				<connector uid="36" angle="77.033">
+					<from>Prop_severe_cases</from>
+					<to>Hospital_surge_rate</to>
+				</connector>
+				<connector uid="37" angle="344.471">
+					<from>Time_to_recover</from>
+					<to>Req_hosp_recovery_rate</to>
+				</connector>
+				<connector uid="38" angle="69.3546">
+					<from>Time_to_recover</from>
+					<to>Asymptomatic_recovery_rate</to>
+				</connector>
+				<stacked_container uid="39" x="981" y="1297.93">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Symptomatic_Cases"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<flow x="1215.42" y="552.059" name="Traveling exposed entering Ibadan">
+					<pts>
+						<pt x="1215.42" y="622.083"/>
+						<pt x="1215.42" y="482.036"/>
+					</pts>
+				</flow>
+				<connector uid="40" angle="18.0679">
+					<from>
+						<alias uid="41"/>
+					</from>
+					<to>Traveling_exposed_entering_Ibadan</to>
+				</connector>
+				<connector uid="42" angle="22.6612">
+					<from>
+						<alias uid="43"/>
+					</from>
+					<to>Traveling_exposed_entering_Ibadan</to>
+				</connector>
+				<stacked_container uid="44" x="1348.79" y="1297.93">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Requiring_Hospital_Care[Moderate]"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="45" x="244.833" y="1030.55">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Susceptible"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="46" x="244.833" y="1297.93">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="false" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Exposed"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="47" x="1348.79" y="1556.76">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Requiring_Hospital_Care[Severe]"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="48" x="1719.12" y="1301.43">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Deceased[Moderate]"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="49" x="1719.12" y="1560.26">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Deceased[Severe]"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<aux color="red" font_color="red" label_side="left" x="829.101" y="57.1283" width="17.1667" height="17.1667" name="Emergency\nProtocol Period\n(0 to 52 Weeks)"/>
+				<stacked_container uid="50" x="612.333" y="1297.93">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Infection_rate"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<flow x="1361.56" y="807.917" name="Incidence">
+					<pts>
+						<pt x="1292.92" y="807.917"/>
+						<pt x="1430.2" y="807.917"/>
+					</pts>
+				</flow>
+				<stock label_side="center" x="1430.2" y="766.25" width="141.667" height="85" name="Cumulative\nSymptomatic\nCases"/>
+				<connector uid="51" angle="239.186">
+					<from>Infection_rate</from>
+					<to>Incidence</to>
+				</connector>
+				<aux label_side="left" label_angle="135" x="1668.2" y="853.75" name="Resultant\nproportion\ndeceased"/>
+				<connector uid="52" angle="179.605">
+					<from>Deceased</from>
+					<to>Resultant_proportion_deceased</to>
+				</connector>
+				<connector uid="53" angle="307.124">
+					<from>Cumulative_Symptomatic_Cases</from>
+					<to>Resultant_proportion_deceased</to>
+				</connector>
+				<stacked_container uid="54" x="987.5" y="1030.55">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Resultant_proportion_deceased"/>
+							<scale min="0"/>
+						</plot>
+						<isee:confidence_intervals include_mean="true">
+							<isee:confidence_interval>0.95</isee:confidence_interval>
+						</isee:confidence_intervals>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="55" x="1352.46" y="1030.55">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Cumulative_Symptomatic_Cases"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<aux color="#00AA00" font_color="#00AA00" label_side="top" x="982.083" y="314.608" name="Contacts per susceptible per day"/>
+				<connector uid="56" angle="297.181">
+					<from>Contacts_per_susceptible_per_day</from>
+					<to>Exposure_rate</to>
+				</connector>
+				<aux label_side="left" label_angle="225" x="927.774" y="202.084" name="Effect of partial lockdown on contact rate"/>
+				<stacked_container uid="57" x="612.333" y="1030.55">
+					<graph width="350" height="250" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="5" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" right_axis_multi_scale="false" right_axis_auto_scale="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Exposure_rate"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<connector uid="58" angle="333.76">
+					<from>Effect_of_partial_lockdown_on_contact_rate</from>
+					<to>Contacts_per_susceptible_per_day</to>
+				</connector>
+				<aux color="red" font_color="red" label_side="left" x="824.226" y="155.045" name="Start Day"/>
+				<aux label_side="right" x="909.774" y="117.948" name="Stop Day"/>
+				<connector uid="59" angle="2.05681">
+					<from>&quot;Emergency_Protocol_Period_(0_to_52_Weeks)&quot;</from>
+					<to>Stop_Day</to>
+				</connector>
+				<connector uid="60" angle="36.1352">
+					<from>Start_Day</from>
+					<to>Stop_Day</to>
+				</connector>
+				<stacked_container uid="61" x="818.333" y="1716.67" width="614.167" height="414.167">
+					<table width="614.167" height="414.167">
+						<item type="time"/>
+						<item>
+							<entity name="Symptomatic_Cases"/>
+						</item>
+						<item>
+							<entity name="Requiring_Hospital_Care[Moderate]"/>
+						</item>
+						<item>
+							<entity name="Requiring_Hospital_Care[Severe]"/>
+						</item>
+						<item>
+							<entity name="Deceased[Moderate]"/>
+						</item>
+						<item>
+							<entity name="Deceased[Severe]"/>
+						</item>
+					</table>
+				</stacked_container>
+				<stock label_side="center" x="368.542" y="306.458" width="136.042" height="84.5833" name="Travelers\nawaiting entry\nto Oyo"/>
+				<flow x="287.708" y="348.75" name="Travelers arriving\nto Oyo">
+					<pts>
+						<pt x="206.875" y="348.75"/>
+						<pt x="368.542" y="348.75"/>
+					</pts>
+				</flow>
+				<connector uid="62" angle="309.634">
+					<from>Expected_arrivals_at_Oyo_boarder_per_day</from>
+					<to>Travelers_arriving_to_Oyo</to>
+				</connector>
+				<connector uid="63" angle="13.7244">
+					<from>Travelers_awaiting_entry_to_Oyo</from>
+					<to>Travelers_crossing_into_Oyo</to>
+				</connector>
+				<flow x="411.875" y="263.104" name="Travelers returning">
+					<pts>
+						<pt x="411.875" y="306.458"/>
+						<pt x="411.875" y="198.75"/>
+					</pts>
+				</flow>
+				<connector uid="64" angle="94.3683">
+					<from>Travelers_awaiting_entry_to_Oyo</from>
+					<to>Travelers_returning</to>
+				</connector>
+				<aux label_side="right" x="516.476" y="263.104" name="Prop travelers\nprocessed per day"/>
+				<connector uid="65" angle="338.26">
+					<from>Prop_travelers_processed_per_day</from>
+					<to>Travelers_crossing_into_Oyo</to>
+				</connector>
+				<connector uid="66" angle="163.754">
+					<from>Prop_travelers_processed_per_day</from>
+					<to>Travelers_returning</to>
+				</connector>
+				<aux x="305.708" y="446.115" name="Boarder\nwaiting capacity"/>
+				<connector uid="67" angle="239.385">
+					<from>Travelers_awaiting_entry_to_Oyo</from>
+					<to>Boarder_waiting_capacity</to>
+				</connector>
+				<connector uid="68" angle="134.665">
+					<from>Boarder_waiting_capacity</from>
+					<to>Travelers_arriving_to_Oyo</to>
+				</connector>
+				<aux color="red" font_color="red" label_side="left" label_angle="225" x="210" y="433.04" name="MAX waiting\ncapacity"/>
+				<connector uid="69" angle="325.973">
+					<from>MAX_waiting_capacity</from>
+					<to>Boarder_waiting_capacity</to>
+				</connector>
+				<connector uid="70" angle="304.001">
+					<from>Start_Day</from>
+					<to>Effect_of_partial_lockdown_on_contact_rate</to>
+				</connector>
+				<connector uid="71" angle="302.655">
+					<from>Stop_Day</from>
+					<to>Effect_of_partial_lockdown_on_contact_rate</to>
+				</connector>
+				<aux label_side="left" label_angle="135" x="571.979" y="159.615" name="Effect of emergency operations on boarder control"/>
+				<connector uid="72" angle="217.448">
+					<from>Effect_of_emergency_operations_on_boarder_control</from>
+					<to>Prop_travelers_processed_per_day</to>
+				</connector>
+				<connector uid="73" angle="219.082">
+					<from>Start_Day</from>
+					<to>Effect_of_emergency_operations_on_boarder_control</to>
+				</connector>
+				<connector uid="74" angle="163.595">
+					<from>Stop_Day</from>
+					<to>Effect_of_emergency_operations_on_boarder_control</to>
+				</connector>
+				<aux x="2211.23" y="552.059" name="Prop recovered\nleaving Oyo"/>
+				<connector uid="75" angle="49.1039">
+					<from>Prop_recovered_leaving_Oyo</from>
+					<to>Recovered_leaving_Ibadan</to>
+				</connector>
+				<alias font_style="italic" label_side="left" uid="43" x="1083.15" y="561.06" width="18" height="18">
+					<of>Travelers_crossing_into_Oyo</of>
+				</alias>
+				<alias color="#00AA00" font_style="italic" font_color="#00AA00" label_side="left" uid="41" x="1092.81" y="514.17" width="18" height="18">
+					<of>Expected_travelers_exposure_rate</of>
+				</alias>
+			</view>
+			<view background="white" page_width="1066" page_height="600" home_view="true" type="interface">
+				<style/>
+			</view>
+			<isee:templates>
+				<view background="white" page_width="1066" page_height="600" type="template">
+					<style/>
+				</view>
+			</isee:templates>
+			<isee:stories>
+				<isee:story uid="76" name="Story 1">
+					<view background="white" page_width="1066" page_height="600" zoom="165" type="interface">
+						<style/>
+						<isee:model_view uid="77" x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" include_equation="true" include_units="true">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Susceptible"/>
+								<item uid="3"/>
+							</isee:visible_list>
+							<isee:highlight_list/>
+						</isee:model_view>
+						<button z_index="1" label="" uid="78" x="1026" y="60">
+							<actions>
+								<action>start</action>
+							</actions>
+						</button>
+						<button label="" uid="79" x="1026" y="23">
+							<actions>
+								<action>restore_all</action>
+							</actions>
+						</button>
+						<button label="" uid="80" x="1026" y="98">
+							<actions>
+								<action target="next_page">navigate</action>
+							</actions>
+						</button>
+						<button label="" uid="81" x="1026" y="135">
+							<actions>
+								<action target="previous_page">navigate</action>
+							</actions>
+						</button>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="165" type="interface">
+						<style/>
+						<isee:model_view uid="82" x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" include_equation="true" include_units="true">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Susceptible"/>
+								<entity name="Traveling_susceptibles_entering_Oyo"/>
+								<item uid="3"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Traveling_susceptibles_entering_Oyo"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<button z_index="1" label="" uid="83" x="1027" y="63">
+							<actions>
+								<action>start</action>
+							</actions>
+						</button>
+						<button label="" uid="84" x="1027" y="26">
+							<actions>
+								<action>restore_all</action>
+							</actions>
+						</button>
+						<button label="" uid="85" x="1027" y="101">
+							<actions>
+								<action target="next_page">navigate</action>
+							</actions>
+						</button>
+						<button label="" uid="86" x="1027" y="138">
+							<actions>
+								<action target="previous_page">navigate</action>
+							</actions>
+						</button>
+					</view>
+					<view background="white" page_width="1066" page_height="600" zoom="165" type="interface">
+						<style/>
+						<isee:model_view uid="87" x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" use_visible_list="true" include_equation="true" include_units="true">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Population"/>
+								<item uid="1"/>
+								<entity name='"Fractional_prevalence_COVID-19"'/>
+								<entity name="Deceased"/>
+								<item uid="3"/>
+								<entity name="Traveling_susceptibles_entering_Oyo"/>
+								<entity name="Fatality_rate"/>
+								<entity name="Per_contact_risk_of_exposure"/>
+								<entity name="Asymptomatic_recovery_rate"/>
+								<entity name="Susceptible"/>
+								<item uid="2"/>
+								<entity name="Exposure_rate"/>
+								<entity name="Symptomatic_Cases"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Population"/>
+								<entity name="Deceased"/>
+								<item uid="1"/>
+								<entity name='"Fractional_prevalence_COVID-19"'/>
+								<entity name="Fatality_rate"/>
+								<entity name="Per_contact_risk_of_exposure"/>
+								<entity name="Asymptomatic_recovery_rate"/>
+								<entity name="Exposure_rate"/>
+								<entity name="Symptomatic_Cases"/>
+								<item uid="2"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<button z_index="1" label="" uid="88" x="1024" y="62">
+							<actions>
+								<action>start</action>
+							</actions>
+						</button>
+						<button label="" uid="89" x="1024" y="25">
+							<actions>
+								<action>restore_all</action>
+							</actions>
+						</button>
+						<button label="" uid="90" x="1024" y="100">
+							<actions>
+								<action target="next_page">navigate</action>
+							</actions>
+						</button>
+						<button label="" uid="91" x="1024" y="137">
+							<actions>
+								<action target="previous_page">navigate</action>
+							</actions>
+						</button>
+					</view>
+					<view background="white" page_width="1066" page_height="600" type="interface">
+						<style/>
+						<isee:model_view uid="92" x="0" y="0" width="1066" height="600" isee:locked="true" zoom="1" center_x="533" center_y="300" locked_view="true" transparent="true" use_visible_list="true" include_equation="true" include_units="true">
+							<model name="Top-Level"/>
+							<isee:visible_list>
+								<entity name="Population"/>
+								<item uid="3"/>
+								<entity name="Deceased"/>
+								<item uid="1"/>
+								<entity name='"Fractional_prevalence_COVID-19"'/>
+								<entity name="Recovered"/>
+								<entity name="Exposure_rate"/>
+								<entity name="Recovered_leaving_Ibadan"/>
+								<entity name="Symptomatic_Cases"/>
+								<entity name="Asymptomatic_recovery_rate"/>
+								<entity name="Traveling_susceptibles_entering_Oyo"/>
+								<entity name="Fatality_rate"/>
+								<entity name="Per_contact_risk_of_exposure"/>
+								<item uid="2"/>
+								<entity name="Susceptible"/>
+							</isee:visible_list>
+							<isee:highlight_list>
+								<entity name="Recovered_leaving_Ibadan"/>
+								<entity name="Recovered"/>
+							</isee:highlight_list>
+						</isee:model_view>
+						<button z_index="1" label="" uid="93" x="1022" y="62">
+							<actions>
+								<action>start</action>
+							</actions>
+						</button>
+						<button label="" uid="94" x="1022" y="25">
+							<actions>
+								<action>restore_all</action>
+							</actions>
+						</button>
+						<button label="" uid="95" x="1022" y="100">
+							<actions>
+								<action target="next_page">navigate</action>
+							</actions>
+						</button>
+						<button label="" uid="96" x="1022" y="137">
+							<actions>
+								<action target="previous_page">navigate</action>
+							</actions>
+						</button>
+					</view>
+				</isee:story>
+			</isee:stories>
+		</views>
+	</model>
+</xmile>
+
